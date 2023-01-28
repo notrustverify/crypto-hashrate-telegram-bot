@@ -54,11 +54,15 @@ export const getHashratesLast7D = async () => {
         timestamp_now - TIMESTAMP_168H_MS
       }&toTs=${timestamp_now}&interval-type=hourly`
     );
+    console.log(`${ALEPHIUM_API_URL}/charts/hashrates?fromTs=${
+      timestamp_now - TIMESTAMP_168H_MS
+    }&toTs=${timestamp_now}&interval-type=hourly`);
     if (!hashrateResponse.ok)
       throw new Error(`ERROR FETCH HASHRATES 24h: ${hashrateResponse.status}`);
     const data = await hashrateResponse.json();
-    const hs = data.slice(data.length - 168).reduce(
+    const hs = data.slice(data.length - 168).reverse().reduce(
       (acc, currHs, i) => {
+        console.log(currHs);
         const hashrate = +currHs.hashrate;
         const hs1H = i < 1 ? hashrate : acc.hs1H;
         const hs3H = i < 3 ? acc.hs3H + hashrate : acc.hs3H;

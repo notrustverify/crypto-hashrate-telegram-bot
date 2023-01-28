@@ -6,7 +6,13 @@ import * as readline from "node:readline";
 
 import { getHashrateNow, getHashratesLast7D, getMinMax } from "./helpers.js";
 import "../env.js";
-
+function setTerminalTitle(title)
+{
+  process.stdout.write(
+    String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7)
+  );
+}
+setTerminalTitle("Hashrate_bot");
 const getFinalString = async (now = false) => {
   const hsNow = await getHashrateNow();
   const { hs1H, hs3H, hs6H, hs1D, hs3D, hs7D } = await getHashratesLast7D();
