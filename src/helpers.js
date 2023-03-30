@@ -3,7 +3,7 @@ import { createWriteStream, createReadStream } from "node:fs";
 import { once } from "node:events";
 import * as readline from "node:readline";
 
-const ALEPHIUM_API_URL = "https://backend-v18.mainnet.alephium.org";
+const ALEPHIUM_API_URL = "https://backend.mainnet.alephium.org";
 const TIMESTAMP_24H_MS = 86_400_000;
 const TIMESTAMP_168H_MS = 7 * TIMESTAMP_24H_MS; //last 7 days
 const HASHRATE_1TH = 1_000_000_000_000; //converted to h/s
