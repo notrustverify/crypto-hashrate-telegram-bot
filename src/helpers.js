@@ -181,7 +181,7 @@ export const getMinMax = async () => {
     if (tmpMin.hashrate < min.hashrate) min = tmpMin;
 
     // update minmax.txt
-    const ws_minmax = createWriteStream("./minmax.txt");
+    const ws_minmax = createWriteStream("../minmax.txt");
     ws_minmax.write(
       `lastTSchecked_${ts_now}\nmin_${min.hashrate}_${min.timestamp}\nmax_${max.hashrate}_${max.timestamp}`
     );
