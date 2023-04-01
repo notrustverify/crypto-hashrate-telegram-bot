@@ -26,6 +26,7 @@ const getFinalString = async (now = false) => {
       `Max(ever): ${maxHs}`
     );
   } catch (error) {
+    console.log(error);
     return "Error occured.";
   }
 };

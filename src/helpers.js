@@ -1,6 +1,5 @@
 import { createWriteStream, createReadStream, write } from "node:fs";
 import { once } from "node:events";
-import fetcc from "node-fetch";
 import * as readline from "node:readline";
 
 const ALEPHIUM_API_URL = "https://backend-v113.mainnet.alephium.org";
@@ -16,7 +15,7 @@ const HOURLY_LIMIT_MS = 2592000000; //30 days worth of data per hour
 
 const writeError = (error) => {
   const ws_error = createWriteStream("./errors.txt", { flags: "a" });
-  ws_error.write(`${new Date().toLocaleString()} | MinMax: ${error.message}`);
+  ws_error.write(`${new Date().toLocaleString()} | MinMax: ${error.message}\n`);
   ws_error.close();
 };
 
@@ -31,7 +30,7 @@ const getHashrateString = (hashrate) => {
 
 export const getHashrateNow = async () => {
   try {
-    const response = await fetcc(`${ALEPHIUM_API_URL}/blocks?page=1&reverse=false`);
+    const response = await fetch(`${ALEPHIUM_API_URL}/blocks?page=1&reverse=false`);
     if (!response.ok)
       throw new Error(
         `ERROR FETCH HASHRATES NOW: ${response.status} ${JSON.stringify(response)}`
@@ -51,7 +50,7 @@ export const getHashrateNow = async () => {
 export const getHashratesLast7D = async () => {
   const timestamp_now = new Date().getTime();
   try {
-    const hashrateResponse = await fetcc(
+    const hashrateResponse = await fetch(
       `${ALEPHIUM_API_URL}/charts/hashrates?fromTs=${
         timestamp_now - TIMESTAMP_168H_MS
       }&toTs=${timestamp_now}&interval-type=hourly`
@@ -98,7 +97,7 @@ const findMaxMin = async (startTS, endTS, tmpMin, tmpMax) => {
   let max = tmpMax;
   let min = tmpMin;
   try {
-    const response = await fetcc(
+    const response = await fetch(
       `${ALEPHIUM_API_URL}/charts/hashrates?fromTs=${startTS}&toTs=${endTS}&interval-type=hourly`
     );
     if (!response.ok)
@@ -155,7 +154,7 @@ export const getMinMax = async () => {
 
     // get old min and max from the file
     const rl = readline.createInterface({
-      input: createReadStream("../minmax.txt"),
+      input: createReadStream("./minmax.txt"),
       crlfDelay: Infinity,
     });
     rl.on("line", (line) => {
@@ -181,7 +180,7 @@ export const getMinMax = async () => {
     if (tmpMin.hashrate < min.hashrate) min = tmpMin;
 
     // update minmax.txt
-    const ws_minmax = createWriteStream("../minmax.txt");
+    const ws_minmax = createWriteStream("./minmax.txt");
     ws_minmax.write(
       `lastTSchecked_${ts_now}\nmin_${min.hashrate}_${min.timestamp}\nmax_${max.hashrate}_${max.timestamp}`
     );
