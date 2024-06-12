@@ -2,11 +2,12 @@ import { createWriteStream, createReadStream, write } from "node:fs";
 import { once } from "node:events";
 import * as readline from "node:readline";
 
-const ALEPHIUM_API_URL = "https://backend-v113.mainnet.alephium.org";
+const ALEPHIUM_API_URL = "https://backend.mainnet.alephium.org";
 const TIMESTAMP_24H_MS = 86_400_000;
 const TIMESTAMP_168H_MS = 7 * TIMESTAMP_24H_MS; //last 7 days
-const HASHRATE_1TH = 1_000_000_000_000; //converted to h/s
 const HASHRATE_1EH = 1_000_000_000_000_000_000;
+const HASHRATE_1PH = 1_000_000_000_000_000;
+const HASHRATE_1TH = 1_000_000_000_000; //converted to h/s
 const HASHRATE_1GH = 1_000_000_000;
 const HASHRATE_1MH = 1_000_000;
 const HASHRATE_1KH = 1_000;
@@ -20,20 +21,31 @@ const writeError = (error) => {
 };
 
 const getHashrateString = (hashrate) => {
-  if (hashrate > HASHRATE_1EH) return (hashrate / HASHRATE_1EH).toFixed(2) + " EH/s";
-  if (hashrate > HASHRATE_1TH) return (hashrate / HASHRATE_1TH).toFixed(2) + " TH/s";
-  if (hashrate > HASHRATE_1GH) return (hashrate / HASHRATE_1GH).toFixed(2) + " GH/s";
-  if (hashrate > HASHRATE_1MH) return (hashrate / HASHRATE_1MH).toFixed(2) + " MH/s";
-  if (hashrate > HASHRATE_1KH) return (hashrate / HASHRATE_1KH).toFixed(2) + " KH/s";
+  if (hashrate > HASHRATE_1EH)
+    return (hashrate / HASHRATE_1EH).toFixed(2) + " EH/s";
+  if (hashrate > HASHRATE_1PH)
+    return (hashrate / HASHRATE_1PH).toFixed(2) + " PH/s";
+  if (hashrate > HASHRATE_1TH)
+    return (hashrate / HASHRATE_1TH).toFixed(2) + " TH/s";
+  if (hashrate > HASHRATE_1GH)
+    return (hashrate / HASHRATE_1GH).toFixed(2) + " GH/s";
+  if (hashrate > HASHRATE_1MH)
+    return (hashrate / HASHRATE_1MH).toFixed(2) + " MH/s";
+  if (hashrate > HASHRATE_1KH)
+    return (hashrate / HASHRATE_1KH).toFixed(2) + " KH/s";
   else return hashrate.toFixed(2) + " H/s";
 };
 
 export const getHashrateNow = async () => {
   try {
-    const response = await fetch(`${ALEPHIUM_API_URL}/blocks?page=1&reverse=false`);
+    const response = await fetch(
+      `${ALEPHIUM_API_URL}/blocks?page=1&reverse=false`
+    );
     if (!response.ok)
       throw new Error(
-        `ERROR FETCH HASHRATES NOW: ${response.status} ${JSON.stringify(response)}`
+        `ERROR FETCH HASHRATES NOW: ${response.status} ${JSON.stringify(
+          response
+        )}`
       );
     const blockData = await response.json();
     const hashrateNow = blockData.blocks.at(0).hashRate;
@@ -107,7 +119,8 @@ const findMaxMin = async (startTS, endTS, tmpMin, tmpMax) => {
     const hashrates = await response.json();
     for (const hs of hashrates) {
       //dont include hashrates when DIFF BOMB was activated
-      if (hs.timestamp > 1670508000000 && hs.timestamp < 1670616000000) continue;
+      if (hs.timestamp > 1670508000000 && hs.timestamp < 1670616000000)
+        continue;
       if (+hs.hashrate > max.hashrate)
         max = { hashrate: +hs.hashrate, timestamp: hs.timestamp };
       if (+hs.hashrate < min.hashrate)
@@ -126,12 +139,21 @@ const storeMaxMin = async () => {
     let ts;
     let min = { hashrate: Number.MAX_VALUE, timestamp: null },
       max = { hashrate: 0, timestamp: null };
-    for (ts = TIMESTAMP_BEGIN; ts < new Date().getTime(); ts += HOURLY_LIMIT_MS) {
+    for (
+      ts = TIMESTAMP_BEGIN;
+      ts < new Date().getTime();
+      ts += HOURLY_LIMIT_MS
+    ) {
       ({ min, max } = await findMaxMin(ts, ts + HOURLY_LIMIT_MS, min, max));
     }
     ts = ts - HOURLY_LIMIT_MS;
     const ts_now = new Date().getTime();
-    const { max: tailMax, min: tailMin } = await findMaxMin(ts, ts_now, min, max);
+    const { max: tailMax, min: tailMin } = await findMaxMin(
+      ts,
+      ts_now,
+      min,
+      max
+    );
     max = max.hashrate > tailMax.hashrate ? tailMax : max;
     min = min.hashrate < tailMin.hashrate ? tailMin : min;
 
@@ -175,7 +197,12 @@ export const getMinMax = async () => {
 
     // get new potential min and max hashrate between ts_last and now
     const ts_now = new Date().getTime();
-    const { min: tmpMin, max: tmpMax } = await findMaxMin(ts_last, ts_now, min, max);
+    const { min: tmpMin, max: tmpMax } = await findMaxMin(
+      ts_last,
+      ts_now,
+      min,
+      max
+    );
     if (tmpMax.hashrate > max.hashrate) max = tmpMax;
     if (tmpMin.hashrate < min.hashrate) min = tmpMin;
 
