@@ -32,14 +32,23 @@ const getFinalString = async (now = false) => {
 };
 // console.log(await getFinalString());
 
+const deleteOrSend = async (message, ctx) => {
+  if (message === "Error occured.") {
+    // delete after 1 minute
+    const { message_id } = await ctx.sendMessage(message);
+    setTimeout(() => ctx.deleteMessage(message_id), 60000);
+    // if no error then send it and dont delete
+  } else await ctx.sendMessage(message);
+};
+
 const bot = new Telegraf(process.env.TOKEN);
 bot.command("hashrate", async (ctx) => {
   const message = await getFinalString();
-  await ctx.sendMessage(message);
+  await deleteOrSend(message, ctx);
 });
 bot.command("hashrate_now", async (ctx) => {
   const message = await getFinalString(true);
-  await ctx.sendMessage(message);
+  await deleteOrSend(message, ctx);
 });
 
 bot.launch();
