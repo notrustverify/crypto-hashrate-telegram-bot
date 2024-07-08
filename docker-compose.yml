@@ -1,0 +1,9 @@
+services:
+  hashrate-bot:
+    build:
+      context: .
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - ./minmax.txt:/app/minmax.txt

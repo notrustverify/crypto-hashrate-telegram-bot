@@ -1,7 +1,6 @@
 import { Telegraf } from "telegraf";
 
 import { getHashrateNow, getHashratesLast7D, getMinMax } from "./helpers.js";
-import "../env.js";
 function setTerminalTitle(title) {
   process.stdout.write(String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7));
 }
