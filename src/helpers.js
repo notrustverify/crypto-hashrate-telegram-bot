@@ -50,7 +50,7 @@ export const getHashrateNow = async () => {
     const blockData = await response.json();
     const hashrateNow = blockData.blocks.at(0).hashRate;
 
-    return getHashrateString(hashrateNow);
+    return [getHashrateString(hashrateNow), hashrateNow/HASHRATE_1EH]
   } catch (error) {
     writeError(error);
     throw error;

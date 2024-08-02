@@ -11,11 +11,12 @@ const sleep = async (seconds) => {
 };
 const getFinalString = async (now = false) => {
   try {
-    const hsNow = await getHashrateNow();
+
+    const hsNow = await getHashrateNow(); // return [0] hashrateNow, [1]polw reached
     const { hs1H, hs3H, hs6H, hs1D, hs3D, hs7D } = await getHashratesLast7D();
     const { maxHs, minHs } = await getMinMax();
     if (now)
-      return `Now: ${hsNow}\n` + `1h: ${hs1H}\n` + `3h: ${hs3H}\n` + `6h: ${hs6H}\n`;
+      return `Now: ${hsNow[0]}\n1h: ${hs1H}\n3h: ${hs3H}\n6h: ${hs6H}\n${hsNow[1]} of PoLW activation`;
     return (
       `6h: ${hs6H}\n` +
       `1d: ${hs1D}\n` +
