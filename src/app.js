@@ -22,8 +22,8 @@ const getFinalString = async (now = false) => {
       `1d: ${hs1D}\n` +
       `3d: ${hs3D}\n` +
       `7d: ${hs7D}\n` +
-      `Min(ever): ${minHs}\n` +
-      `Max(ever): ${maxHs}`
+      `ATL: ${minHs}\n` +
+      `ATH: ${maxHs}`
     );
   } catch (error) {
     console.log(error);
