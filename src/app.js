@@ -50,5 +50,11 @@ bot.command("hashrate_now", async (ctx) => {
   const message = await getFinalString(true);
   await deleteOrSend(message, ctx);
 });
+bot.command("hs", async (ctx) => {
+  const message = await getFinalString(true);
+  await deleteOrSend(message, ctx);
+});
+
+
 
 bot.launch();
