@@ -16,7 +16,7 @@ const getFinalString = async (now = false) => {
     const { hs1H, hs3H, hs6H, hs1D, hs3D, hs7D } = await getHashratesLast7D();
     const { maxHs, minHs } = await getMinMax();
     if (now)
-      return `Now: ${hsNow[0]}\n1h: ${hs1H}\n3h: ${hs3H}\n6h: ${hs6H}\n${hsNow[1]} of PoLW activation`;
+      return `Now: ${hsNow[0]}\n1h: ${hs1H}\n3h: ${hs3H}\n6h: ${hs6H}\n${(hsNow[1]*100.0).toFixed(3)} of PoLW activation`;
     return (
       `6h: ${hs6H}\n` +
       `1d: ${hs1D}\n` +
