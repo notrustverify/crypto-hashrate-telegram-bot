@@ -21,7 +21,7 @@ const getFinalString = async (now = false) => {
       `6h: ${hs6H}\n` +
       `1d: ${hs1D}\n` +
       `3d: ${hs3D}\n` +
-      `7d: ${hs7D}\n` +
+      `7d: ${hs7D}\n\n` +
       `ATL: ${minHs}\n` +
       `ATH: ${maxHs}`
     );
