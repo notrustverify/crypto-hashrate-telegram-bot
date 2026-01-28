@@ -10,6 +10,12 @@ const blacklistedGroups = process.env.BLACKLISTED_GROUPS
 const isBlacklisted = (chatId) => {
   return blacklistedGroups.includes(String(chatId));
 };
+
+if (blacklistedGroups.length > 0) {
+  console.log(`Blacklisted groups: ${blacklistedGroups.join(", ")}`);
+} else {
+  console.log("No blacklisted groups configured");
+}
 function setTerminalTitle(title) {
   process.stdout.write(String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7));
 }
