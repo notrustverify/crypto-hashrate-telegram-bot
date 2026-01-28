@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Telegraf } from "telegraf";
 
 import { getHashrateNow, getHashratesLast7D, getMinMax } from "./helpers.js";
