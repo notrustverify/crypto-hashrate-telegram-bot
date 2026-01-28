@@ -1,6 +1,15 @@
 import { Telegraf } from "telegraf";
 
 import { getHashrateNow, getHashratesLast7D, getMinMax } from "./helpers.js";
+
+// Parse blacklisted group IDs from env var (comma-separated)
+const blacklistedGroups = process.env.BLACKLISTED_GROUPS
+  ? process.env.BLACKLISTED_GROUPS.split(",").map((id) => id.trim())
+  : [];
+
+const isBlacklisted = (chatId) => {
+  return blacklistedGroups.includes(String(chatId));
+};
 function setTerminalTitle(title) {
   process.stdout.write(String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7));
 }
@@ -42,6 +51,15 @@ const deleteOrSend = async (message, ctx) => {
 };
 
 const bot = new Telegraf(process.env.TOKEN);
+
+// Middleware to block blacklisted groups
+bot.use((ctx, next) => {
+  if (ctx.chat && isBlacklisted(ctx.chat.id)) {
+    return; // Silently ignore commands from blacklisted groups
+  }
+  return next();
+});
+
 bot.command("hashrate", async (ctx) => {
   const message = await getFinalString();
   await deleteOrSend(message, ctx);
